@@ -83,7 +83,7 @@ if lines != lines_old:
 
     # Calculate starting y position to vertically center the text
     total_height = len(processed_lines) * (text_height + 5) - 5  # Adjust line spacing if necessary
-    y = (epd.height - total_height) // 2 - epd.height // 2
+    y = (epd.height - total_height) // 2 - epd.height // 4
 
     # Draw the lines
     for i, line in enumerate(processed_lines):
