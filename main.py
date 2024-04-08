@@ -85,13 +85,13 @@ while True:
 
         # Calculate starting y position to vertically center the text
         total_height = len(processed_lines) * (text_height + 5) - 5  # Adjust line spacing if necessary
-        y = (epd.height - total_height) // 2 - epd.height // 4
+        y = 10
 
         # Draw the lines
         for i, line in enumerate(processed_lines):
             text_width, _ = draw.textsize(line, font=fut_bold)
             x = (epd.width - text_width) // 2 + epd.width // 2
-            draw.text((x, y + i * (text_height + 5)), line, font=fut_book, fill=0)  # Adjust line spacing if necessary
+            draw.text((x, y + i * (text_height + 5)), line, font=fut_bold, fill=0)  # Adjust line spacing if necessary
 
         epd.display(epd.getbuffer(image))
     time.sleep(60)
