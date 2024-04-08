@@ -20,8 +20,8 @@ import time
 logging.basicConfig(level=logging.DEBUG)
 
 lines = []
-fut_bold = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Bold.otf'), 24)
-fut_book = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Book.otf'), 24)
+fut_bold = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Bold.otf'), 18)
+fut_book = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Book.otf'), 18)
 
 # Specify encoding to avoid errors
 encoding = 'utf-8'
@@ -59,9 +59,9 @@ if lines != lines_old:
     # Draw the lines
     for i, line in enumerate(lines):
         if i == 0:
-            draw.text((10, 10), line, font=fut_bold, fill=0)
+            draw.text((10, 10), line, font = fut_book, fill = 0)
         else:
-            draw.text((10, 10 + 30 * i), line, font=fut_book, fill=0)
+            draw.text((10, 10 + i*20), line, font = fut_bold, fill = 0)
 
     epd.display(epd.getbuffer(image))
     time.sleep (10)
