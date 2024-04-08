@@ -1,7 +1,7 @@
 import sys
 import os
 import logging
-from waveshare_epd import epd2in13_V4
+
 import time
 from PIL import Image, ImageDraw, ImageFont
 import requests
@@ -29,6 +29,8 @@ picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
 libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
 if os.path.exists(libdir):
     sys.path.append(libdir)
+
+from waveshare_epd import epd2in13_V4
 
 fut_bold = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Bold.otf'), 18)
 fut_book = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Medium.otf'), 18)
