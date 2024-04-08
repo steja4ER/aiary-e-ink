@@ -50,26 +50,47 @@ lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace(
 # Delete leading and trailing whitespaces
 lines = [line.strip() for line in lines]
 
-# Check if lines has changed since last time
+# Function to automatically split text into multiple lines if it exceeds a certain width
+def split_text_into_lines(text, font, max_width):
+    words = text.split(' ')
+    lines = []
+    current_line = ''
+    for word in words:
+        # Check if adding the next word would exceed the max width
+        test_line = current_line + ' ' + word if current_line else word
+        text_width, _ = draw.textsize(test_line, font=font)
+        if text_width <= max_width:
+            current_line = test_line
+        else:
+            lines.append(current_line)
+            current_line = word
+    lines.append(current_line)  # Add the last line
+    return lines
+
+# Modify the section that processes and displays the lines
 if lines != lines_old:
     epd.Clear(0xFF)
     image = Image.new('1', (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
 
+    max_width = epd.width - 20  # Set max width for text, adjust padding as needed
+
+    processed_lines = []
+    for line in lines:
+        processed_lines.extend(split_text_into_lines(line, fut_bold, max_width))
+
+    # Calculate starting y position to vertically center the text
+    total_height = len(processed_lines) * (text_height + 5) - 5  # Adjust line spacing if necessary
+    y = (epd.height - total_height) // 2
+
     # Draw the lines
-    for i, line in enumerate(lines):
+    for i, line in enumerate(processed_lines):
         text_width, text_height = draw.textsize(line, font=fut_bold)
-        x = (epd.width - text_width) // 2 + epd.width*0.5
-        y = 10 + i * 20
-        if i == 0:
-            draw.text((x, y), line, font=fut_book, fill=0)
-        else:
-            draw.text((x, y), line, font=fut_bold, fill=0)
+        x = (epd.width - text_width) // 2
+        draw.text((x, y + i * (text_height + 5)), line, font=fut_bold, fill=0)  # Adjust line spacing if necessary
 
     epd.display(epd.getbuffer(image))
-    time.sleep (10)
-    
-#    time.sleep(60)
+    time.sleep(10)
 
     
 
