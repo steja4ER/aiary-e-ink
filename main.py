@@ -45,7 +45,9 @@ epd = epd2in13_V4.EPD()
 epd.init()
 epd.Clear(0xFF)
 
+old_lines = []
 while True:
+    old_lines = lines
     response = requests.get(url)
     html = response.content.decode(encoding)
 
@@ -54,6 +56,10 @@ while True:
     lines = [line for line in lines if '<p><b>' in line]
     lines = lines[0].split('</b><br>')
     lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '').strip().replace('"', '') for line in lines]
+
+    if lines == old_lines:
+        time.sleep(60)
+        continue
 
     image = Image.new('1', (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
@@ -67,9 +73,8 @@ while True:
 
         for pline in processed_lines:
             text_width, text_height = draw.textsize(pline, font=font)
-            x = (epd.width - text_width) // 2
+            x = (epd.width - text_width) // 2 + epd.width // 2
             draw.text((x, y), pline, font=font, fill=0)
             y += text_height + 5  # Adjust spacing between lines if necessary
 
     epd.display(epd.getbuffer(image))
-    time.sleep(60)
