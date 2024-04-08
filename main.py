@@ -45,7 +45,7 @@ epd = epd2in13_V4.EPD()
 epd.init()
 epd.Clear(0xFF)
 
-old_lines = []
+lines = []
 while True:
     old_lines = lines
     response = requests.get(url)
