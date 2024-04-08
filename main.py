@@ -16,6 +16,7 @@ from PIL import Image,ImageDraw,ImageFont
 import traceback
 import requests
 import time
+import textwrap
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -67,13 +68,15 @@ def split_text_into_lines(text, font, max_width):
     lines.append(current_line)  # Add the last line
     return lines
 
-# Modify the section that processes and displays the lines
 if lines != lines_old:
     epd.Clear(0xFF)
     image = Image.new('1', (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
 
     max_width = epd.width - 20  # Set max width for text, adjust padding as needed
+
+    # Pre-calculate text height for centering calculation
+    sample_text_width, text_height = draw.textsize("Sample", font=fut_bold)
 
     processed_lines = []
     for line in lines:
@@ -85,7 +88,7 @@ if lines != lines_old:
 
     # Draw the lines
     for i, line in enumerate(processed_lines):
-        text_width, text_height = draw.textsize(line, font=fut_bold)
+        text_width, _ = draw.textsize(line, font=fut_bold)
         x = (epd.width - text_width) // 2
         draw.text((x, y + i * (text_height + 5)), line, font=fut_bold, fill=0)  # Adjust line spacing if necessary
 
