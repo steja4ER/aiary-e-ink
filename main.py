@@ -49,8 +49,13 @@ lines = []
 while True:
 
     old_lines = lines
-    response = requests.get(url)
-    html = response.content.decode(encoding)
+    try:
+        response = requests.get(url)
+        html = response.content.decode(encoding)
+    except Exception as e:
+        logging.error(e)
+        time.sleep(10)
+        continue
 
     # Extract lines including "<p><b>" and process them
     lines = html.split('\n')
@@ -79,4 +84,9 @@ while True:
             y += text_height + 5  # Adjust spacing between lines if necessary
 
     image = image.rotate(180)
-    epd.display(epd.getbuffer(image))
+    try:
+        epd.display(epd.getbuffer(image))
+    except Exception as e:
+        logging.error(e)
+        time.sleep(10)
+        continue
