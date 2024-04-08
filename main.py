@@ -34,6 +34,10 @@ epd = epd2in13_V4.EPD()
 epd.init()
 epd.Clear(0xFF)
 
+lines_old = []
+
+response = requests.get(url)
+html = response.content.decode(encoding)
 
 # Function to automatically split text into multiple lines if it exceeds a certain width
 def split_text_into_lines(text, font, max_width):
