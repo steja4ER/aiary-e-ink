@@ -2,10 +2,13 @@
 # -*- coding:utf-8 -*-
 import sys
 import os
-picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
+picdir = os.path.join(os.path.dirname(os.path.realpath(__file__))), 'pic')
+libdir = os.path.join(os.path.dirname(os.path.realpath(__file__))), 'lib')
+if os.path.exists(libdir):
+    sys.path.append(libdir)
 
 import logging
-import epd2in13b_V4
+import epd2in13g
 import time
 from PIL import Image,ImageDraw,ImageFont
 import traceback
@@ -13,55 +16,45 @@ import traceback
 logging.basicConfig(level=logging.DEBUG)
 
 try:
-    logging.info("epd2in13b_V4 Demo")
-    
-    epd = epd2in13b_V4.EPD()
+    logging.info("epd2in13g Demo")
+
+    epd = epd2in13g.EPD()   
     logging.info("init and Clear")
     epd.init()
     epd.Clear()
-    time.sleep(1)
-    
-    # Drawing on the image
-    logging.info("Drawing")    
-    font20 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 20)
+    font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
     font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
-    
+    font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
+    font40 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 40)
 
+    # Drawing on the image
+    logging.info("1.Drawing on the image...")
+    Himage = Image.new('RGB', (epd.height, epd.width), epd.WHITE)  
+    draw = ImageDraw.Draw(Himage)
+    draw.rectangle([(0,0),(50,50)],outline = epd.BLACK)
+    draw.rectangle([(55,0),(100,50)],fill = epd.RED)
+    draw.line([(0,0),(50,50)], fill = epd.YELLOW,width = 1)
+    draw.line([(0,50),(50,0)], fill = epd.YELLOW,width = 1)
+    draw.pieslice((55, 60, 95, 100), 90, 180, outline = epd.RED)
+    draw.pieslice((55, 60, 95, 100), 270, 360, fill = epd.BLACK)
+    draw.chord((10, 60, 50, 100), 0, 360, fill = epd.YELLOW)
+    draw.ellipse((55, 60, 95, 100), outline = epd.RED)
+    draw.polygon([(110,0),(110,50),(150,25)],outline = epd.BLACK)
+    draw.polygon([(190,0),(190,50),(150,25)],fill = epd.BLACK)
+    draw.text((120, 60), 'e-Paper demo', font = font15, fill = epd.YELLOW)
+    draw.text((110, 90), u'微雪电子', font = font24, fill = epd.RED)
+
+    epd.display(epd.getbuffer(Himage))
+    time.sleep(3)
     
-    # Drawing on the Vertical image
-    logging.info("2.Drawing on the Vertical image...")
-    LBlackimage = Image.new('1', (epd.width, epd.height), 255)  # 122*250
-    LRYimage = Image.new('1', (epd.width, epd.height), 255)  # 122*250
-    drawblack = ImageDraw.Draw(LBlackimage)
-    drawry = ImageDraw.Draw(LRYimage)
-    drawblack.text((2, 0), 'hello world', font = font18, fill = 0)
-    drawblack.text((2, 20), '2.13 epd b V4', font = font18, fill = 0)
-    drawblack.text((20, 50), u'微雪电子', font = font18, fill = 0)
-    drawblack.line((10, 90, 60, 140), fill = 0)
-    drawblack.line((60, 90, 10, 140), fill = 0)
-    drawblack.rectangle((10, 90, 60, 140), outline = 0)
-    drawry.rectangle((10, 150, 60, 200), fill = 0)
-    drawry.arc((15, 95, 55, 135), 0, 360, fill = 0)
-    drawry.chord((15, 155, 55, 195), 0, 360, fill =1)
-    epd.display(epd.getbuffer(LBlackimage), epd.getbuffer(LRYimage))
-    time.sleep(2)
-    
-    logging.info("3.read bmp file")
-    Blackimage = Image.open(os.path.join(picdir, '2in13b_V4b.bmp'))
-    RYimage = Image.open(os.path.join(picdir, '2in13b_V4b.bmp'))
-    epd.display(epd.getbuffer(Blackimage), epd.getbuffer(RYimage))
-    time.sleep(2)
-    
-    logging.info("4.read bmp file on window")
-    blackimage1 = Image.new('1', (epd.height, epd.width), 255)  # 250*122
-    redimage1 = Image.new('1', (epd.height, epd.width), 255)  # 250*122
-    newimage = Image.open(os.path.join(picdir, '100x100.bmp'))
-    blackimage1.paste(newimage, (0,0))
-    epd.display(epd.getbuffer(blackimage1), epd.getbuffer(redimage1))
+    # read bmp file 
+    logging.info("2.read bmp file")
+    Himage = Image.open(os.path.join(picdir, '2in13g.bmp'))
+    epd.display(epd.getbuffer(Himage))
+    time.sleep(3)
     
     logging.info("Clear...")
-    epd.init()
-    epd.clear()
+    epd.Clear()
     
     logging.info("Goto Sleep...")
     epd.sleep()
@@ -71,5 +64,5 @@ except IOError as e:
     
 except KeyboardInterrupt:    
     logging.info("ctrl + c:")
-    epd2in13b_V4.epdconfig.module_exit(cleanup=True)
+    epd2in13g.epdconfig.module_exit(cleanup=True)
     exit()
