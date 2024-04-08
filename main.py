@@ -58,10 +58,13 @@ if lines != lines_old:
 
     # Draw the lines
     for i, line in enumerate(lines):
+        text_width, text_height = draw.textsize(line, font=fut_bold)
+        x = (epd.width - text_width) // 2
+        y = 10 + i * 20
         if i == 0:
-            draw.text((10, 10), line, font = fut_book, fill = 0)
+            draw.text((x, y), line, font=fut_book, fill=0)
         else:
-            draw.text((10, 10 + i*20), line, font = fut_bold, fill = 0)
+            draw.text((x, y), line, font=fut_bold, fill=0)
 
     epd.display(epd.getbuffer(image))
     time.sleep (10)
