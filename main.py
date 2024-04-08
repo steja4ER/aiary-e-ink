@@ -66,6 +66,8 @@ while True:
     lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '') for line in lines]
     # Delete leading and trailing whitespaces
     lines = [line.strip() for line in lines]
+    #Replace leading and trailing "
+    lines = [line.replace('"', '') for line in lines]
 
 
 
