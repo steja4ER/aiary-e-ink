@@ -47,39 +47,36 @@ epd.Clear(0xFF)
 
 lines = []
 while True:
-    try:
-        old_lines = lines
-        response = requests.get(url)
-        html = response.content.decode(encoding)
 
-        # Extract lines including "<p><b>" and process them
-        lines = html.split('\n')
-        lines = [line for line in lines if '<p><b>' in line]
-        lines = lines[0].split('</b><br>')
-        lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '').strip().replace('"', '') for line in lines]
+    old_lines = lines
+    response = requests.get(url)
+    html = response.content.decode(encoding)
 
-        if lines == old_lines:
-            time.sleep(60)
-            continue
+    # Extract lines including "<p><b>" and process them
+    lines = html.split('\n')
+    lines = [line for line in lines if '<p><b>' in line]
+    lines = lines[0].split('</b><br>')
+    lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '').strip().replace('"', '') for line in lines]
 
-        image = Image.new('1', (epd.height, epd.width), 255)
-        draw = ImageDraw.Draw(image)
-        max_width = epd.width - 20
-        y = 10
-
-        # Iterate over lines to apply different fonts and processing
-        for i, line in enumerate(lines):
-            font = fut_bold if i == 0 else fut_book
-            processed_lines = split_text_into_lines(line, font, max_width, draw)
-
-            for pline in processed_lines:
-                text_width, text_height = draw.textsize(pline, font=font)
-                x = (epd.width - text_width) // 2 + epd.width // 2
-                draw.text((x, y), pline, font=font, fill=0)
-                y += text_height + 5  # Adjust spacing between lines if necessary
-
-        image = image.rotate(180)
-        epd.display(epd.getbuffer(image))
-    except:
-        logging.error(f'An error occurred: {sys.exc_info()[0]}')
+    if lines == old_lines:
         time.sleep(60)
+        continue
+
+    image = Image.new('1', (epd.height, epd.width), 255)
+    draw = ImageDraw.Draw(image)
+    max_width = epd.width - 20
+    y = 10
+
+    # Iterate over lines to apply different fonts and processing
+    for i, line in enumerate(lines):
+        font = fut_bold if i == 0 else fut_book
+        processed_lines = split_text_into_lines(line, font, max_width, draw)
+
+        for pline in processed_lines:
+            text_width, text_height = draw.textsize(pline, font=font)
+            x = (epd.width - text_width) // 2 + epd.width // 2
+            draw.text((x, y), pline, font=font, fill=0)
+            y += text_height + 5  # Adjust spacing between lines if necessary
+
+    image = image.rotate(180)
+    epd.display(epd.getbuffer(image))
