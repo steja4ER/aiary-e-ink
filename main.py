@@ -32,8 +32,8 @@ if os.path.exists(libdir):
 
 from waveshare_epd import epd2in13_V4
 
-fut_bold = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Bold.otf'), 18)
-fut_book = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Medium.otf'), 18)
+fut_bold = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Bold.otf'), 20)
+fut_book = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Medium.otf'), 20)
 
 # Specify encoding to avoid errors
 encoding = 'utf-8'
@@ -77,4 +77,5 @@ while True:
             draw.text((x, y), pline, font=font, fill=0)
             y += text_height + 5  # Adjust spacing between lines if necessary
 
+    image = image.rotate(180)
     epd.display(epd.getbuffer(image))
