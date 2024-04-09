@@ -69,7 +69,7 @@ while True:
 
     image = Image.new('1', (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
-    max_width = epd.width - 20
+    max_width = epd.width
     y = 10
 
     # Iterate over lines to apply different fonts and processing
