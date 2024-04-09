@@ -20,7 +20,7 @@ centering = False
 font_std_name = 'DejaVuSans.ttf'
 font_bold_name = 'DejaVuSans-Bold.ttf'
 font_bold_size = 22
-font_std_size = 19
+font_std_size = 18
 encoding = 'utf-8'
 url = 'http://aiary.stefanjanisch.net'
 
