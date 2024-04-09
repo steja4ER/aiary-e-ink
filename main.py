@@ -24,6 +24,9 @@ font_std_size = 18
 encoding = 'utf-8'
 url = 'http://aiary.stefanjanisch.net'
 
+epd_width = 250
+epd_height = 122
+
 # FUNCTIONS
 def get_text_dimensions(text_string, font):
     # https://stackoverflow.com/a/46220683/9263761
@@ -58,7 +61,7 @@ epd = epd2in13_V4.EPD()
 epd.init()
 epd.Clear(0xFF)
 
-print(epd.width, epd.height)
+print(epd_width, epd_height)
 
 # class epd:
 #     width = 250
@@ -101,9 +104,9 @@ while True:
     font_std_size_current = font_std_size
     font_bold_size_current = font_bold_size
     while not fits:
-        image = Image.new('1', (epd.height, epd.width), 255)
+        image = Image.new('1', (epd_height, epd_width), 255)
         draw = ImageDraw.Draw(image)
-        max_width = epd.width
+        max_width = epd_width
         y = 10
         line_spacing = 5
 
@@ -120,14 +123,14 @@ while True:
             for pline in processed_lines:
                 text_width, text_height = get_text_dimensions(pline, font=font)
                 if centering:
-                    x = (epd.width - text_width) // 2 + epd.width // 2
+                    x = (epd_width - text_width) // 2 + epd_width // 2
                 else:
                     x = 10
                 draw.text((x, y), pline, font=font, fill=0)
                 y += text_height + line_spacing  # Adjust spacing between lines if necessary
         
         # Check if text is outside the screen
-        if y > epd.height:
+        if y > epd_height:
             font_std_size_current -= 1
             font_bold_size_current -= 1
             print("Text too large, reducing font size")
