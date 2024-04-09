@@ -39,22 +39,35 @@ def get_text_dimensions(text_string, font):
 
 # Function to automatically split text into multiple lines if it exceeds a certain width
 def split_text_into_lines(text, font, max_width, draw):
-    words = text.split(' ')
+    # Split the text by space to get words, then further split each word by hyphen if necessary,
+    # treating the hyphen as a separate word for potential line breaking.
+    words = []
+    for word in text.split(' '):
+        subwords = word.split('-')
+        for i, subword in enumerate(subwords[:-1]):  # Don't process the last one the same way because it doesn't end in a hyphen
+            words.append(subword)
+            words.append('-')  # Treat hyphen as a separate word for potential line breaking
+        words.append(subwords[-1])
+
     lines = []
     current_line = ''
     for word in words:
-        # Check if adding the next word would exceed the max width
-        test_line = f'{current_line} {word}' if current_line else word
-        text_width, _ = get_text_dimensions(test_line, font=font)
+        if word == '-':
+            test_line = f"{current_line}{word}"  # Don't add a space before hyphen
+        else:
+            test_line = f'{current_line} {word}' if current_line else word
+        text_width, _ = get_text_dimensions(test_line.strip(), font=font)  # Use strip to remove leading/trailing spaces
         if text_width <= max_width:
             current_line = test_line
         else:
-            lines.append(current_line)
-            current_line = word
-    lines.append(current_line)  # Add the last line
-    # Delete empty strings
-    lines = [line for line in lines if line]
+            if current_line:
+                lines.append(current_line)
+            current_line = word if word != '-' else ''  # Start new line; if word is a hyphen, start with an empty line
+    if current_line:  # Add the last line if it's not empty
+        lines.append(current_line)
+    lines = [line.strip() for line in lines if line]  # Remove leading/trailing spaces and empty strings
     return lines
+
 
 epd = epd2in13_V4.EPD()
 
@@ -95,7 +108,7 @@ while True:
     lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '').strip().replace('"', '') for line in lines]
 
     if lines == old_lines:
-        time.sleep(60)
+        time.sleep(120)
         continue
 
     font_std_size_current = font_std_size
