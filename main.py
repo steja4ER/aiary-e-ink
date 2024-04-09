@@ -134,9 +134,11 @@ while True:
             temp_image = Image.new('1', (epd.height, epd.width), 255)
             temp_draw = ImageDraw.Draw(temp_image)
             processed_lines = split_text_into_lines(line, font, max_width, temp_draw)
-            for pline in processed_lines:
+            for j, pline in enumerate(processed_lines):
                 _, text_height = get_text_dimensions(pline, font)
                 total_text_height += text_height + line_spacing
+                if i == 0 and j == 0:
+                    total_text_height -= 5
             total_text_height += line_spacing  # Add spacing between lines
 
         total_text_height -= line_spacing  # Adjust because there's no spacing after the last line
