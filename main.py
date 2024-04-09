@@ -109,8 +109,8 @@ while True:
         y = 10
         line_spacing = 5
 
-        font_bold = ImageFont.truetype(os.path.join(fontdir, font_bold_name), font_std_size_current)
-        font_std = ImageFont.truetype(os.path.join(fontdir, font_std_name), font_bold_size_current)
+        font_bold = ImageFont.truetype(os.path.join(fontdir, font_bold_name), font_bold_size_current)
+        font_std = ImageFont.truetype(os.path.join(fontdir, font_std_name), font_std_size_current)
 
         # Iterate over lines to apply different fonts and processing
         for i, line in enumerate(lines):
