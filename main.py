@@ -124,6 +124,7 @@ while True:
             for pline in processed_lines:
                 _, text_height = get_text_dimensions(pline, font)
                 total_text_height += text_height + line_spacing
+            total_text_height += line_spacing  # Add spacing between lines
 
         total_text_height -= line_spacing  # Adjust because there's no spacing after the last line
 
@@ -157,6 +158,7 @@ while True:
                 x = 10
             draw.text((x, y), pline, font=font, fill=0)
             y += text_height + line_spacing
+        y += line_spacing
 
     # Display the image
     image = image.rotate(180)
