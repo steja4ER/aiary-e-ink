@@ -16,7 +16,7 @@ if os.path.exists(libdir):
 from waveshare_epd import epd2in13_V4
 
 # OPTIONS
-centering = True
+centering = False
 font_std_name = 'DejaVuSans.ttf'
 font_bold_name = 'DejaVuSans-Bold.ttf'
 font_bold_size = 22
@@ -107,6 +107,11 @@ while True:
         max_line_width = 0
         line_spacing = 5
 
+        if centering:
+            max_width = epd_width
+        else:
+            max_width = epd_width - 20
+
         font_bold = ImageFont.truetype(os.path.join(fontdir, font_bold_name), font_bold_size_current)
         font_std = ImageFont.truetype(os.path.join(fontdir, font_std_name), font_std_size_current)
 
@@ -115,7 +120,7 @@ while True:
             font = font_bold if i == 0 else font_std
             temp_image = Image.new('1', (epd.height, epd.width), 255)
             temp_draw = ImageDraw.Draw(temp_image)
-            processed_lines = split_text_into_lines(line, font, epd_width, temp_draw)
+            processed_lines = split_text_into_lines(line, font, max_width, temp_draw)
             for pline in processed_lines:
                 _, text_height = get_text_dimensions(pline, font)
                 total_text_height += text_height + line_spacing
@@ -142,7 +147,7 @@ while True:
 
     for i, line in enumerate(lines):
         font = font_bold if i == 0 else font_std
-        processed_lines = split_text_into_lines(line, font, epd_width, draw)
+        processed_lines = split_text_into_lines(line, font, max_width, draw)
 
         for pline in processed_lines:
             text_width, text_height = get_text_dimensions(pline, font)
