@@ -17,8 +17,10 @@ from waveshare_epd import epd2in13_V4
 
 # OPTIONS
 centering = False
-font_bold = ImageFont.truetype(os.path.join(fontdir, 'DejaVuSans-Bold.ttf'), 22)
-font_std = ImageFont.truetype(os.path.join(fontdir, 'DejaVuSans.ttf'), 18)
+font_std_name = 'DejaVuSans.ttf'
+font_bold_name = 'DejaVuSans-Bold.ttf'
+font_bold_size = 22
+font_std_size = 18
 encoding = 'utf-8'
 url = 'http://aiary.stefanjanisch.net'
 
@@ -76,24 +78,40 @@ while True:
         time.sleep(60)
         continue
 
-    image = Image.new('1', (epd.height, epd.width), 255)
-    draw = ImageDraw.Draw(image)
-    max_width = epd.width
-    y = 10
+    # While loop that redraws the image until the lines fit on the screen
+    fits = False
+    font_std_size_current = font_std_size
+    font_bold_size_current = font_bold_size
+    while not fits:
+        image = Image.new('1', (epd.height, epd.width), 255)
+        draw = ImageDraw.Draw(image)
+        max_width = epd.width
+        y = 10
+        line_spacing = 5
 
-    # Iterate over lines to apply different fonts and processing
-    for i, line in enumerate(lines):
-        font = font_bold if i == 0 else font_std
-        processed_lines = split_text_into_lines(line, font, max_width, draw)
+        font_bold = ImageFont.truetype(os.path.join(fontdir, font_bold_name), font_std_size_current)
+        font_std = ImageFont.truetype(os.path.join(fontdir, font_std_name), font_bold_size_current)
 
-        for pline in processed_lines:
-            text_width, text_height = get_text_dimensions(pline, font=font)
-            if centering:
-                x = (epd.width - text_width) // 2 + epd.width // 2
-            else:
-                x = 10
-            draw.text((x, y), pline, font=font, fill=0)
-            y += text_height + 5  # Adjust spacing between lines if necessary
+        # Iterate over lines to apply different fonts and processing
+        for i, line in enumerate(lines):
+            font = font_bold if i == 0 else font_std
+            processed_lines = split_text_into_lines(line, font, max_width, draw)
+
+            for pline in processed_lines:
+                text_width, text_height = get_text_dimensions(pline, font=font)
+                if centering:
+                    x = (epd.width - text_width) // 2 + epd.width // 2
+                else:
+                    x = 10
+                draw.text((x, y), pline, font=font, fill=0)
+                y += text_height + line_spacing  # Adjust spacing between lines if necessary
+        
+        # Check if text is outside the screen
+        if y > epd.height:
+            font_std_size_current -= 1
+            font_bold_size_current -= 1
+        else:
+            fits = True
 
     image = image.rotate(180)
     try:

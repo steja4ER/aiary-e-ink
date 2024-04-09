@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "aiary-e-ink",
+			"path": "."
+		},
+		{
+			"name": "lib",
+			"path": "../../../../Downloads/e-Paper-master/RaspberryPi_JetsonNano/python/lib"
+		}
+	],
+	"settings": {}
+}
