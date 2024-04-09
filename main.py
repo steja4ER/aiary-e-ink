@@ -49,12 +49,16 @@ def split_text_into_lines(text, font, max_width, draw):
             lines.append(current_line)
             current_line = word
     lines.append(current_line)  # Add the last line
+    # Delete empty strings
+    lines = [line for line in lines if line]
     return lines
 
 epd = epd2in13_V4.EPD()
 
 epd.init()
 epd.Clear(0xFF)
+    
+        
 
 lines = []
 while True:
