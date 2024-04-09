@@ -32,8 +32,8 @@ if os.path.exists(libdir):
 
 from waveshare_epd import epd2in13_V4
 
-fut_bold = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Bold.otf'), 20)
-fut_book = ImageFont.truetype(os.path.join("Futura Std", 'FuturaStd-Medium.otf'), 20)
+font_bold = ImageFont.truetype(os.path.join("Fonts", 'B612-Bold.ttf'), 20)
+font_std = ImageFont.truetype(os.path.join("Fonts", 'B612-Regular.ttf'), 20)
 
 # Specify encoding to avoid errors
 encoding = 'utf-8'
@@ -74,7 +74,7 @@ while True:
 
     # Iterate over lines to apply different fonts and processing
     for i, line in enumerate(lines):
-        font = fut_bold if i == 0 else fut_book
+        font = font_bold if i == 0 else font_std
         processed_lines = split_text_into_lines(line, font, max_width, draw)
 
         for pline in processed_lines:
