@@ -8,6 +8,30 @@ import requests
 
 logging.basicConfig(level=logging.DEBUG)
 
+fontdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Fonts')
+libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
+if os.path.exists(libdir):
+    sys.path.append(libdir)
+
+from waveshare_epd import epd2in13_V4
+
+# OPTIONS
+centering = False
+font_bold = ImageFont.truetype(os.path.join(fontdir, 'DejaVuSans-Bold.ttf'), 22)
+font_std = ImageFont.truetype(os.path.join(fontdir, 'DejaVuSans.ttf'), 18)
+encoding = 'utf-8'
+url = 'http://aiary.stefanjanisch.net'
+
+# FUNCTIONS
+def get_text_dimensions(text_string, font):
+    # https://stackoverflow.com/a/46220683/9263761
+    ascent, descent = font.getmetrics()
+
+    text_width = font.getmask(text_string).getbbox()[2]
+    text_height = font.getmask(text_string).getbbox()[3] + descent
+
+    return (text_width, text_height)
+
 # Function to automatically split text into multiple lines if it exceeds a certain width
 def split_text_into_lines(text, font, max_width, draw):
     words = text.split(' ')
@@ -16,7 +40,7 @@ def split_text_into_lines(text, font, max_width, draw):
     for word in words:
         # Check if adding the next word would exceed the max width
         test_line = f'{current_line} {word}' if current_line else word
-        text_width, _ = draw.textsize(test_line, font=font)
+        text_width, _ = get_text_dimensions(test_line, font=font)
         if text_width <= max_width:
             current_line = test_line
         else:
@@ -24,21 +48,6 @@ def split_text_into_lines(text, font, max_width, draw):
             current_line = word
     lines.append(current_line)  # Add the last line
     return lines
-
-picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
-libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
-if os.path.exists(libdir):
-    sys.path.append(libdir)
-
-from waveshare_epd import epd2in13_V4
-
-font_bold = ImageFont.truetype(os.path.join("Fonts", 'B612-Bold.ttf'), 20)
-font_std = ImageFont.truetype(os.path.join("Fonts", 'B612-Regular.ttf'), 20)
-
-# Specify encoding to avoid errors
-encoding = 'utf-8'
-
-url = 'http://aiary.stefanjanisch.net'
 
 epd = epd2in13_V4.EPD()
 
@@ -78,8 +87,11 @@ while True:
         processed_lines = split_text_into_lines(line, font, max_width, draw)
 
         for pline in processed_lines:
-            text_width, text_height = draw.textsize(pline, font=font)
-            x = (epd.width - text_width) // 2 + epd.width // 2
+            text_width, text_height = get_text_dimensions(pline, font=font)
+            if centering:
+                x = (epd.width - text_width) // 2 + epd.width // 2
+            else:
+                x = 10
             draw.text((x, y), pline, font=font, fill=0)
             y += text_height + 5  # Adjust spacing between lines if necessary
 
