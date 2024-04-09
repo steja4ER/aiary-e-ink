@@ -163,7 +163,7 @@ while True:
         font = font_bold if i == 0 else font_std
         processed_lines = split_text_into_lines(line, font, max_width, draw)
 
-        for pline in processed_lines:
+        for j,pline in enumerate(processed_lines):
             text_width, text_height = get_text_dimensions(pline, font)
             if centering:
                 x = (epd_width - text_width) // 2  # Center horizontally
@@ -171,6 +171,8 @@ while True:
                 x = 10
             draw.text((x, y), pline, font=font, fill=0)
             y += text_height + line_spacing
+            if i == 0 and j == 0:
+                y -= 2
         y += line_spacing
 
     # Display the image
