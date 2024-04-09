@@ -105,7 +105,10 @@ while True:
     while not fits:
         image = Image.new('1', (epd.height, epd.width), 255)
         draw = ImageDraw.Draw(image)
-        max_width = epd_width
+        if centering:
+            max_width = epd_width
+        else:
+            max_width = epd_width - 20
         y = 10
         line_spacing = 5
 
