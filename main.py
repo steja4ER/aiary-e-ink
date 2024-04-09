@@ -115,6 +115,8 @@ while True:
             font = font_bold if i == 0 else font_std
             processed_lines = split_text_into_lines(line, font, max_width, draw)
 
+            print(processed_lines)
+
             for pline in processed_lines:
                 text_width, text_height = get_text_dimensions(pline, font=font)
                 if centering:
