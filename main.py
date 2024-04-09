@@ -61,7 +61,6 @@ epd = epd2in13_V4.EPD()
 epd.init()
 epd.Clear(0xFF)
 
-print(epd_width, epd_height)
 
 # class epd:
 #     width = 250
@@ -104,7 +103,7 @@ while True:
     font_std_size_current = font_std_size
     font_bold_size_current = font_bold_size
     while not fits:
-        image = Image.new('1', (epd_height, epd_width), 255)
+        image = Image.new('1', (epd.height, epd.width), 255)
         draw = ImageDraw.Draw(image)
         max_width = epd_width
         y = 10
