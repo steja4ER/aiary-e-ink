@@ -110,6 +110,7 @@ while True:
         if y > epd.height:
             font_std_size_current -= 1
             font_bold_size_current -= 1
+            print("Text too large, reducing font size")
         else:
             fits = True
 
