@@ -16,7 +16,7 @@ if os.path.exists(libdir):
 from waveshare_epd import epd2in13_V4
 
 # OPTIONS
-centering = False
+centering = True
 font_std_name = 'DejaVuSans.ttf'
 font_bold_name = 'DejaVuSans-Bold.ttf'
 font_bold_size = 22
