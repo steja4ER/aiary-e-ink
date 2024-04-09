@@ -57,6 +57,20 @@ epd = epd2in13_V4.EPD()
 
 epd.init()
 epd.Clear(0xFF)
+
+print(epd.width, epd.height)
+
+# class epd:
+#     width = 250
+#     height = 122
+
+#     @staticmethod
+#     def display(image):
+#         print(image)
+
+#     @staticmethod
+#     def getbuffer(image):
+#         return image
     
         
 
