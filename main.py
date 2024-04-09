@@ -172,7 +172,7 @@ while True:
             draw.text((x, y), pline, font=font, fill=0)
             y += text_height + line_spacing
             if i == 0 and j == 0:
-                y -= 2
+                y -= 5
         y += line_spacing
 
     # Display the image
