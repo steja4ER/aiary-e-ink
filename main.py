@@ -125,7 +125,7 @@ while True:
             for pline in processed_lines:
                 text_width, text_height = get_text_dimensions(pline, font=font)
                 if centering:
-                    x = (epd_width - text_width) // 2 + epd_width // 2
+                    x = (epd_width - text_width) // 2
                 else:
                     x = 10
                 draw.text((x, y), pline, font=font, fill=0)
