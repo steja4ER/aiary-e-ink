@@ -88,169 +88,99 @@ epd.Clear(0xFF)
 #         return image
     
         
+got_data = False
 
-lines = []
-
-while True:
-    old_lines = lines
+while not got_data:
     try:
         response = requests.get(url)
         html = response.content.decode(encoding)
+        got_data = True
     except Exception as e:
         logging.error(e)
         time.sleep(10)
         continue
 
-    # Extract lines including "<p><b>" and process them
-    lines = html.split('\n')
-    lines = [line for line in lines if '<p><b>' in line]
-    lines = lines[0].split('</b><br>')
-    lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '').strip().replace('"', '') for line in lines]
+# Extract lines including "<p><b>" and process them
+lines = html.split('\n')
+lines = [line for line in lines if '<p><b>' in line]
+lines = lines[0].split('</b><br>')
+lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '').strip().replace('"', '') for line in lines]
 
-    if lines == old_lines:
-        time.sleep(120)
-        continue
 
-    font_std_size_current = font_std_size
-    font_bold_size_current = font_bold_size
-    fits = False
+font_std_size_current = font_std_size
+font_bold_size_current = font_bold_size
+fits = False
 
-    while not fits:
-        total_text_height = 0
-        max_line_width = 0
-        line_spacing = 5
+while not fits:
+    total_text_height = 0
+    max_line_width = 0
+    line_spacing = 5
 
-        if centering:
-            max_width = epd_width
-        else:
-            max_width = epd_width - 20
+    if centering:
+        max_width = epd_width
+    else:
+        max_width = epd_width - 20
 
-        font_bold = ImageFont.truetype(os.path.join(fontdir, font_bold_name), font_bold_size_current)
-        font_std = ImageFont.truetype(os.path.join(fontdir, font_std_name), font_std_size_current)
+    font_bold = ImageFont.truetype(os.path.join(fontdir, font_bold_name), font_bold_size_current)
+    font_std = ImageFont.truetype(os.path.join(fontdir, font_std_name), font_std_size_current)
 
-        # Calculate the total height of the text block and check if it fits
-        for i, line in enumerate(lines):
-            font = font_bold if i == 0 else font_std
-            temp_image = Image.new('1', (epd.height, epd.width), 255)
-            temp_draw = ImageDraw.Draw(temp_image)
-            processed_lines = split_text_into_lines(line, font, max_width, temp_draw)
-            for j, pline in enumerate(processed_lines):
-                _, text_height = get_text_dimensions(pline, font)
-                total_text_height += text_height + line_spacing
-                if i == 0 and j == 0:
-                    total_text_height -= 5
-            total_text_height += line_spacing  # Add spacing between lines
-
-        total_text_height -= line_spacing  # Adjust because there's no spacing after the last line
-
-        # Check if text is outside the screen and adjust font size if necessary
-        if total_text_height > epd_height:
-            font_std_size_current -= 1
-            font_bold_size_current -= 1
-            if font_std_size_current < 10 or font_bold_size_current < 10:  # Prevent fonts from becoming too small
-                logging.error("Text too large and font size too small. Cannot fit text.")
-                break
-        else:
-            fits = True
-
-    # After determining the correct font size, calculate start_y for vertical centering
-    start_y = max((epd_height - total_text_height) // 2, 0)
-
-    # Draw the image with centered text
-    image = Image.new('1', (epd.height, epd.width), 255)
-    draw = ImageDraw.Draw(image)
-    y = start_y
-
+    # Calculate the total height of the text block and check if it fits
     for i, line in enumerate(lines):
         font = font_bold if i == 0 else font_std
-        processed_lines = split_text_into_lines(line, font, max_width, draw)
-
-        for j,pline in enumerate(processed_lines):
-            text_width, text_height = get_text_dimensions(pline, font)
-            if centering:
-                x = (epd_width - text_width) // 2  # Center horizontally
-            else:
-                x = 10
-            draw.text((x, y), pline, font=font, fill=0)
-            y += text_height + line_spacing
+        temp_image = Image.new('1', (epd.height, epd.width), 255)
+        temp_draw = ImageDraw.Draw(temp_image)
+        processed_lines = split_text_into_lines(line, font, max_width, temp_draw)
+        for j, pline in enumerate(processed_lines):
+            _, text_height = get_text_dimensions(pline, font)
+            total_text_height += text_height + line_spacing
             if i == 0 and j == 0:
-                y -= 5
-        y += line_spacing
+                total_text_height -= 5
+        total_text_height += line_spacing  # Add spacing between lines
 
-    # Display the image
-    image = image.rotate(180)
-    try:
-        epd.display(epd.getbuffer(image))
-    except Exception as e:
-        logging.error(e)
-        time.sleep(10)
-        continue
+    total_text_height -= line_spacing  # Adjust because there's no spacing after the last line
 
-while True:
+    # Check if text is outside the screen and adjust font size if necessary
+    if total_text_height > epd_height:
+        font_std_size_current -= 1
+        font_bold_size_current -= 1
+        if font_std_size_current < 10 or font_bold_size_current < 10:  # Prevent fonts from becoming too small
+            logging.error("Text too large and font size too small. Cannot fit text.")
+            break
+    else:
+        fits = True
 
-    old_lines = lines
-    try:
-        response = requests.get(url)
-        html = response.content.decode(encoding)
-    except Exception as e:
-        logging.error(e)
-        time.sleep(10)
-        continue
+# After determining the correct font size, calculate start_y for vertical centering
+start_y = max((epd_height - total_text_height) // 2, 0)
 
-    # Extract lines including "<p><b>" and process them
-    lines = html.split('\n')
-    lines = [line for line in lines if '<p><b>' in line]
-    lines = lines[0].split('</b><br>')
-    lines = [line.replace('<p>', '').replace('<b>', '').replace('</p>', '').replace('</b>', '').replace('<br>', '').strip().replace('"', '') for line in lines]
+# Draw the image with centered text
+image = Image.new('1', (epd.height, epd.width), 255)
+draw = ImageDraw.Draw(image)
+y = start_y
 
-    if lines == old_lines:
-        time.sleep(60)
-        continue
+for i, line in enumerate(lines):
+    font = font_bold if i == 0 else font_std
+    processed_lines = split_text_into_lines(line, font, max_width, draw)
 
-    # While loop that redraws the image until the lines fit on the screen
-    fits = False
-    font_std_size_current = font_std_size
-    font_bold_size_current = font_bold_size
-    while not fits:
-        image = Image.new('1', (epd.height, epd.width), 255)
-        draw = ImageDraw.Draw(image)
+    for j,pline in enumerate(processed_lines):
+        text_width, text_height = get_text_dimensions(pline, font)
         if centering:
-            max_width = epd_width
+            x = (epd_width - text_width) // 2  # Center horizontally
         else:
-            max_width = epd_width - 20
-        y = 10
-        line_spacing = 5
+            x = 10
+        draw.text((x, y), pline, font=font, fill=0)
+        y += text_height + line_spacing
+        if i == 0 and j == 0:
+            y -= 5
+    y += line_spacing
 
-        font_bold = ImageFont.truetype(os.path.join(fontdir, font_bold_name), font_bold_size_current)
-        font_std = ImageFont.truetype(os.path.join(fontdir, font_std_name), font_std_size_current)
 
-        # Iterate over lines to apply different fonts and processing
-        for i, line in enumerate(lines):
-            font = font_bold if i == 0 else font_std
-            processed_lines = split_text_into_lines(line, font, max_width, draw)
-
-            print(processed_lines)
-
-            for pline in processed_lines:
-                text_width, text_height = get_text_dimensions(pline, font=font)
-                if centering:
-                    x = (epd_width - text_width) // 2
-                else:
-                    x = 10
-                draw.text((x, y), pline, font=font, fill=0)
-                y += text_height + line_spacing  # Adjust spacing between lines if necessary
-        
-        # Check if text is outside the screen
-        if y > epd_height:
-            font_std_size_current -= 1
-            font_bold_size_current -= 1
-            print("Text too large, reducing font size")
-        else:
-            fits = True
-
-    image = image.rotate(180)
+# Display the image
+image = image.rotate(180)
+displayed_image = False
+while not displayed_image: 
     try:
         epd.display(epd.getbuffer(image))
+        displayed_image = True
     except Exception as e:
         logging.error(e)
         time.sleep(10)
