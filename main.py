@@ -1,3 +1,5 @@
+#!/home/pi/aiary-e-ink/venv/bin/python
+
 import sys
 import os
 import logging
